@@ -1,3 +1,6 @@
 sensio_framework_extra:
-    router:
-        annotations: false
+    # SensioFrameworkExtraBundle and FOSRestBundle are not compatible so
+    # we disable the @View annotation
+    view: { annotations: false }
+    # The conversion from JSON to PHP object in now automatic
+    request: { converters: true }

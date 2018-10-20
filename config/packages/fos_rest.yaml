@@ -1,15 +1,21 @@
 # Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
-fos_rest: ~
-#    param_fetcher_listener:  true
-#    allowed_methods_listener:  true
-#    routing_loader: true
-#    view:
-#        view_response_listener:  true
-#    exception:
-#        codes:
-#            App\Exception\MyException: 403
-#        messages:
-#            App\Exception\MyException: Forbidden area.
-#    format_listener:
-#        rules:
-#            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
+fos_rest:
+    view:
+        # We ask FOSRestBundle to  intercep the object and serailize it for us
+        view_response_listener:  true
+        # Only these formats are accepted for the serialization
+        formats: { json: true, xml: false, rss: false }
+    # The conversion from JSON to PHP object in now automatic
+    body_converter:
+        enabled: true
+    # We as FOSRestBundle to allow empty object's field in the serialized object
+    # If false, the field will not be displayed
+    serializer:
+        serialize_null: true
+    format_listener:
+        rules:
+            # For all routes starting with /api, objects returned by actions must be JSON serialized
+            # in priority
+            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }
+    # use this to validate POST and GET parameters sent by user
+    param_fetcher_listener: force
