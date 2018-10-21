@@ -2,11 +2,11 @@
 namespace App\Controller;
 
 use App\Entity\Company;
+use App\Exception\ResourceValidationException;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,9 +18,8 @@ use Symfony\Component\Validator\ConstraintViolationList;
  * Class CompanyController
  * @package App\Controller
  */
-class CompanyController extends FOSRestController
+class CompanyController extends BaseController
 {
-
     /**
      * @Rest\Get("/companies", name="company_list")
      * @param CompanyRepository $repository
@@ -44,12 +43,11 @@ class CompanyController extends FOSRestController
      * @param EntityManagerInterface $manager
      * @param ConstraintViolationList $violations
      * @return View
+     * @throws ResourceValidationException
      */
     public function create(Company $company, EntityManagerInterface $manager, ConstraintViolationList $violations): View
     {
-        if (count($violations)) {
-            return View::create($violations, Response::HTTP_BAD_REQUEST);
-        }
+        parent::validateEntity($violations);
 
         $manager->persist($company);
         $manager->flush();
@@ -59,11 +57,14 @@ class CompanyController extends FOSRestController
 
     /**
      * @Rest\Get(path="/companies/{id}", name="company_show")
-     * @param Company $company
+     * @param Request $request
+     * @param CompanyRepository $repository
      * @return View
      */
-    public function show(Company $company): View
+    public function show(Request $request, CompanyRepository $repository): View
     {
+        $company = $repository->findOneBy(['id' => $request->get('id')]);
+        $this->notFound($company, 'Company not found');
         return View::create($company, Response::HTTP_OK , []);
     }
 
@@ -78,9 +79,7 @@ class CompanyController extends FOSRestController
     {
         $company = $repository->findOneBy(['id' => $request->get('id')]);
 
-        if (empty($company)) {
-            return View::create(['error' => 'Company not found'], Response::HTTP_NOT_FOUND);
-        }
+        $this->notFound($company, 'Company not found');
 
         $form = $this->createForm(CompanyType::class, $company);
         $form->submit($request->request->all());
@@ -102,15 +101,7 @@ class CompanyController extends FOSRestController
      */
     public function delete(int $id, EntityManagerInterface $manager, CompanyRepository $repository): View
     {
-        $company = $repository->findOneBy(['id' => $id]);
-
-        if (empty($company)) {
-            return View::create(['error' => 'Company not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $manager->remove($company);
-        $manager->flush();
-
+        $this->deleteEntity($id, 'Company not found', $repository, $manager);
         return View::create(['success' => 'The company has been deleted'], Response::HTTP_OK , []);
     }
 }

@@ -10,7 +10,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -20,7 +19,7 @@ use Symfony\Component\Validator\ConstraintViolationList;
  * Class UserController
  * @package App\Controller
  */
-class UserController extends AbstractController
+class UserController extends BaseController
 {
     /**
      * @Rest\Get("/users", name="user_list")
@@ -46,17 +45,16 @@ class UserController extends AbstractController
      * @param CompanyRepository $repository
      * @param ConstraintViolationList $violations
      * @return View
+     * @throws \App\Exception\ResourceValidationException
      */
     public function create(User $user, EntityManagerInterface $manager, CompanyRepository $repository, ConstraintViolationList $violations): View
     {
-        if (count($violations)) {
-            return View::create($violations, Response::HTTP_BAD_REQUEST);
-        }
+        parent::validateEntity($violations);
 
         $company = $repository->findOneBy(['name' => $user->getCompany()->getName()]);
-        if (empty($company)) {
-            return View::create(['error' => 'The user company does not exist'], Response::HTTP_NOT_FOUND);
-        }
+
+        $this->notFound($user, 'The user company does not exist');
+
         $user->setCompany($company);
 
         $manager->persist($user);
@@ -90,15 +88,12 @@ class UserController extends AbstractController
         if (isset($request->get('company')['name'])) {
             $company = $companyRepository->findOneBy(['name' => $request->get('company')['name']]);
 
-            if (empty($company)) {
-                return View::create(['error' => 'The user company does not exist'], Response::HTTP_NOT_FOUND);
-            }
+            $this->notFound($company, 'The user company does not exist');
+
             $user->setCompany($company);
         }
 
-        if (empty($user)) {
-            return View::create(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
-        }
+        $this->notFound($user, 'User not found');
 
         $form = $this->createForm(UserType::class, $user);
         $form->submit($request->request->all());
@@ -117,15 +112,7 @@ class UserController extends AbstractController
      */
     public function delete(int $id, EntityManagerInterface $manager, UserRepository $repository): View
     {
-        $user = $repository->findOneBy(['id' => $id]);
-
-        if (empty($user)) {
-            return View::create(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $manager->remove($user);
-        $manager->flush();
-
+        $this->deleteEntity($id, 'User not found', $repository, $manager);
         return View::create(['success' => 'The User has been deleted'], Response::HTTP_OK , []);
     }
 }
