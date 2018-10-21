@@ -3,6 +3,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -10,6 +11,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @Serializer\ExclusionPolicy("all")
+ * @UniqueEntity(
+ *     fields={"email"},
+ *     errorPath="email",
+ *     message="This email is already in use on that database."
+ * )
  */
 class User
 {
@@ -37,9 +43,9 @@ class User
     private $lastname;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=100, unique=true)
      * @Assert\NotBlank(groups={"create"})
-     * @Assert\Length(max="255", groups={"create"})
+     * @Assert\Length(max="100", groups={"create"})
      * @Serializer\Expose
      */
     private $email;

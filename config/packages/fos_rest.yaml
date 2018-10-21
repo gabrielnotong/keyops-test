@@ -21,3 +21,9 @@ fos_rest:
             - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }
     # use this to validate POST and GET parameters sent by user
     param_fetcher_listener: force
+    exception:
+        enabled: true
+        codes:
+            { App\Exception\ResourceValidationException: 400, \Exception: 500 }
+        messages:
+           { App\Exception\ResourceValidationException: true }
