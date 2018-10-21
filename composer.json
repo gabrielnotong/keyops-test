@@ -20,8 +20,11 @@
         "white-october/pagerfanta-bundle": "^1.2"
     },
     "require-dev": {
+        "symfony/browser-kit": "*",
+        "symfony/css-selector": "*",
         "symfony/dotenv": "*",
-        "symfony/maker-bundle": "^1.8"
+        "symfony/maker-bundle": "^1.8",
+        "symfony/phpunit-bridge": "*"
     },
     "config": {
         "preferred-install": {
