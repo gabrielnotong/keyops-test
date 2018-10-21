@@ -11,6 +11,7 @@ use FOS\RestBundle\View\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @Rest\Route("api")
@@ -32,13 +33,24 @@ class CompanyController extends FOSRestController
 
     /**
      * @Rest\Post(path="/companies", name="company_add")
-     * @ParamConverter("company", converter="fos_rest.request_body")
+     * @ParamConverter(
+     *     "company",
+     *     converter="fos_rest.request_body",
+     *     options={
+     *          "validator"={"groups"="create"}
+     *     }
+     * )
      * @param Company $company
      * @param EntityManagerInterface $manager
+     * @param ConstraintViolationList $violations
      * @return View
      */
-    public function create(Company $company, EntityManagerInterface $manager): View
+    public function create(Company $company, EntityManagerInterface $manager, ConstraintViolationList $violations): View
     {
+        if (count($violations)) {
+            return View::create($violations, Response::HTTP_BAD_REQUEST);
+        }
+
         $manager->persist($company);
         $manager->flush();
 
@@ -77,6 +89,7 @@ class CompanyController extends FOSRestController
             $manager->persist($company);
             $manager->flush();
         }
+
         return View::create($company, Response::HTTP_OK , []);
     }
 
