@@ -49,11 +49,11 @@ class UserController extends BaseController
      */
     public function create(User $user, EntityManagerInterface $manager, CompanyRepository $repository, ConstraintViolationList $violations): View
     {
-        parent::validateEntity($violations);
+        $this->validateEntity($violations);
 
         $company = $repository->findOneBy(['name' => $user->getCompany()->getName()]);
 
-        $this->notFound($user, 'The user company does not exist');
+        $this->notFound($company, 'The user company does not exist');
 
         $user->setCompany($company);
 
