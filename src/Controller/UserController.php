@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @Rest\Route("api")
@@ -33,21 +34,31 @@ class UserController extends AbstractController
 
     /**
      * @Rest\Post(path="/users", name="user_add")
-     * @ParamConverter("user", converter="fos_rest.request_body")
+     * @ParamConverter(
+     *     "user",
+     *     converter="fos_rest.request_body",
+     *     options={
+     *          "validator"={"groups"="create"}
+     *     }
+     * )
      * @param User $user
      * @param EntityManagerInterface $manager
      * @param CompanyRepository $repository
+     * @param ConstraintViolationList $violations
      * @return View
      */
-    public function create(User $user, EntityManagerInterface $manager, CompanyRepository $repository): View
+    public function create(User $user, EntityManagerInterface $manager, CompanyRepository $repository, ConstraintViolationList $violations): View
     {
-        $company = $repository->findOneBy(['name' => $user->getCompany()->getName()]);
+        if (count($violations)) {
+            return View::create($violations, Response::HTTP_BAD_REQUEST);
+        }
 
+        $company = $repository->findOneBy(['name' => $user->getCompany()->getName()]);
         if (empty($company)) {
             return View::create(['error' => 'The user company does not exist'], Response::HTTP_NOT_FOUND);
         }
-
         $user->setCompany($company);
+
         $manager->persist($user);
         $manager->flush();
 

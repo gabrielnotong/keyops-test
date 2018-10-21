@@ -5,6 +5,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -23,32 +24,42 @@ class Company
     private $id;
 
     /**
-     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(groups={"create"})
+     * @Assert\Length(max="255", groups={"create"})
+     * @Serializer\Expose
      */
     private $name;
 
     /**
-     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(groups={"create"})
+     * @Assert\Length(max="255", groups={"create"})
+     * @Serializer\Expose
      */
     private $address;
 
     /**
-     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(groups={"create"})
+     * @Assert\Length(max="255", groups={"create"})
+     * @Serializer\Expose
      */
     private $phone;
 
     /**
-     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(groups={"create"})
+     * @Assert\Length(max="255", groups={"create"})
+     * @Serializer\Expose
      */
     private $email;
 
     /**
-     * @Serializer\Expose
      * @ORM\Column(type="string", length=1500)
+     * @Assert\NotBlank(groups={"create"})
+     * @Assert\Length(max="1500", groups={"create"})
+     * @Serializer\Expose
      */
     private $description;
 
