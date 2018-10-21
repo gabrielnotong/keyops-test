@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\Entity
  * @ORM\Table(name="company")
  * @ORM\Entity(repositoryClass="App\Repository\CompanyRepository")
+ * @Serializer\ExclusionPolicy("all")
  */
 class Company
 {
@@ -17,30 +18,36 @@ class Company
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Serializer\Expose
      */
     private $id;
 
     /**
+     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
      */
     private $address;
 
     /**
+     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
      */
     private $phone;
 
     /**
+     * @Serializer\Expose
      * @ORM\Column(type="string", length=255)
      */
     private $email;
 
     /**
+     * @Serializer\Expose
      * @ORM\Column(type="string", length=1500)
      */
     private $description;
