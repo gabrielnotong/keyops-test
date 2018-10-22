@@ -9,7 +9,9 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -23,6 +25,18 @@ class UserController extends BaseController
 {
     /**
      * @Rest\Get("/users", name="user_list")
+     * @SWG\Get(
+     *     summary="Get users info"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if users list is ok",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="users")
      * @param UserRepository $repository
      * @return View
      */
@@ -33,6 +47,19 @@ class UserController extends BaseController
 
     /**
      * @Rest\Post(path="/users", name="user_add")
+     *  @SWG\Post(
+     *     summary="Create new user"
+     * )
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returned if the user has been successfully created",
+     *     @SWG\Schema(
+     *         ref=@Model(type=User::class),
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="users")
      * @ParamConverter(
      *     "user",
      *     converter="fos_rest.request_body",
@@ -64,17 +91,46 @@ class UserController extends BaseController
     }
 
     /**
-     * @Rest\Get(path="/users/{id}", name="user_show")
-     * @param User $user
+     * @Rest\Get(path="/users/{id}", name="user_show", requirements={"id"="\d+"})
+     *  @SWG\Get(
+     *     summary="Show a user"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if user is found",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="users")
+     * @param Request $request
+     * @param UserRepository $userRepository
      * @return View
      */
-    public function show(User $user): View
+    public function show(Request $request, UserRepository $userRepository): View
     {
+        $user = $userRepository->findOneBy(['id' => $request->get('id')]);
+        $this->notFound($user, 'User not found');
+
         return View::create($user, Response::HTTP_OK , []);
     }
 
     /**
-     * @Rest\Put(path="/users/{id}", name="user_update")
+     * @Rest\Put(path="/users/{id}", name="user_update", requirements={"id"="\d+"})
+     *  @SWG\Put(
+     *     summary="Updates user informations"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if user informations has been success fully updated",
+     *     @SWG\Schema(
+     *         ref=@Model(type=User::class),
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="users")
      * @param UserRepository $userRepository
      * @param CompanyRepository $companyRepository
      * @param EntityManagerInterface $manager
@@ -104,7 +160,19 @@ class UserController extends BaseController
     }
 
     /**
-     * @Rest\Delete(path="/users/{id}", name="user_delete")
+     * @Rest\Delete(path="/users/{id}", name="user_delete", requirements={"id"="\d+"})
+     *  @SWG\Delete(
+     *     summary="Deletes a user"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if user deleted",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="users")
      * @param int $id
      * @param UserRepository $repository
      * @param EntityManagerInterface $manager

@@ -8,7 +8,9 @@ use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -22,6 +24,18 @@ class CompanyController extends BaseController
 {
     /**
      * @Rest\Get("/companies", name="company_list")
+     * @SWG\Get(
+     *     summary="Get companies info"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if companies list is ok",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="companies")
      * @param CompanyRepository $repository
      * @return View
      */
@@ -32,6 +46,19 @@ class CompanyController extends BaseController
 
     /**
      * @Rest\Post(path="/companies", name="company_add")
+     * @SWG\Post(
+     *     summary="Creates a company"
+     * )
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returned if the company has been successfully created",
+     *     @SWG\Schema(
+     *         ref=@Model(type=Company::class),
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="companies")
      * @ParamConverter(
      *     "company",
      *     converter="fos_rest.request_body",
@@ -56,7 +83,19 @@ class CompanyController extends BaseController
     }
 
     /**
-     * @Rest\Get(path="/companies/{id}", name="company_show")
+     * @Rest\Get(path="/companies/{id}", name="company_show", requirements={"id"="\d+"})
+     * @SWG\Get(
+     *     summary="Show a company"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if company is found",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="companies")
      * @param Request $request
      * @param CompanyRepository $repository
      * @return View
@@ -69,7 +108,20 @@ class CompanyController extends BaseController
     }
 
     /**
-     * @Rest\Put(path="/companies/{id}", name="company_update")
+     * @Rest\Put(path="/companies/{id}", name="company_update", requirements={"id"="\d+"})
+     * @SWG\Put(
+     *     summary="Updates Company informations"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if Company informations has been success fully updated",
+     *     @SWG\Schema(
+     *         ref=@Model(type=Company::class),
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="companies")
      * @param CompanyRepository $repository
      * @param EntityManagerInterface $manager
      * @param Request $request
@@ -93,7 +145,19 @@ class CompanyController extends BaseController
     }
 
     /**
-     * @Rest\Delete(path="/companies/{id}", name="company_delete")
+     * @Rest\Delete(path="/companies/{id}", name="company_delete", requirements={"id"="\d+"})
+     * @SWG\Delete(
+     *     summary="Deletes a company"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returned if company deleted",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
+     *     )
+     * )
+     * @SWG\Tag(name="companies")
      * @param int $id
      * @param CompanyRepository $repository
      * @param EntityManagerInterface $manager
