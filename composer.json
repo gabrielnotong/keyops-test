@@ -7,15 +7,21 @@
         "ext-iconv": "*",
         "friendsofsymfony/rest-bundle": "^2.4",
         "jms/serializer-bundle": "^2.4",
+        "nelmio/api-doc-bundle": "^3.3",
         "sensio/framework-extra-bundle": "^5.2",
+        "sonata-project/admin-bundle": "^3.40",
+        "sonata-project/doctrine-orm-admin-bundle": "^3.6",
         "symfony/apache-pack": "^1.0",
+        "symfony/asset": "*",
         "symfony/console": "*",
         "symfony/flex": "^1.1",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
         "symfony/orm-pack": "^1.0",
         "symfony/serializer": "*",
+        "symfony/twig-bundle": "*",
         "symfony/validator": "*",
+        "symfony/web-server-bundle": "*",
         "symfony/yaml": "*",
         "white-october/pagerfanta-bundle": "^1.2"
     },
@@ -67,7 +73,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "4.1.*"
         }
     }
