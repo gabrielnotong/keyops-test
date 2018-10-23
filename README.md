@@ -27,8 +27,7 @@ Unit testing
 
 `<env name="DATABASE_URL" value="mysql://database_user:database_password@127.0.0.1:3306/database" />`
 
-> Some tests have been implemented
-- php bin/phpunit
+> Execute the test using this command line: `php bin/phpunit`
 
 HOW TO USE THE API
 ---
