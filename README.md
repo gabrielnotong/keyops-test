@@ -2,8 +2,8 @@ Plateforme de dev
 ---
 - PHP >= 7.1.3
 - Mysql >= 5.6.37
-- Serveur web: ampps 3.8
-- Outil de test api: Postman `or` /api/doc
+- Web server: ampps 3.8
+- API testing tools: Postman `or` /api/doc
 
 Installation
 ---
