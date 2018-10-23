@@ -30,3 +30,16 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    # Sonata admin classes
+    admin.user:
+        class: App\Admin\UserAdmin
+        arguments: [~, App\Entity\User, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: User informations }
+        public: true
+    admin.company:
+        class: App\Admin\CompanyAdmin
+        arguments: [~, App\Entity\Company, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Company informations }
+        public: true

@@ -1,5 +1,6 @@
 <?php
 namespace App\Controller;
+use App\Entity\User;
 use App\Exception\ResourceValidationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -36,6 +37,18 @@ abstract class BaseController extends FOSRestController
         if (empty($entity) || $entity == null) {
             throw $this->createNotFoundException($message);
         }
+    }
+
+    /**
+     * @param User $user
+     * @param array $prams
+     * @return User
+     */
+    protected function hydrateUser(User $user, array $prams): User {
+        $user->setFirstName($prams['firstname'])
+            ->setLastName($prams['lastname'])
+            ->setEmail($prams['email']);
+        return $user;
     }
 
     /**

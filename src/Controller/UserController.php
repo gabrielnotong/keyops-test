@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\UserType;
 use App\Repository\CompanyRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,6 +59,23 @@ class UserController extends BaseController
      *     )
      * )
      * @SWG\Tag(name="users")
+     * @SWG\Parameter(
+     *     name="Body",
+     *     in="body",
+     *     required=true,
+     *     description="All fields are mandatory. Please enter existing comapany name",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(property="firstname", type="string"),
+     *         @SWG\Property(property="lastname", type="string"),
+     *         @SWG\Property(property="email", type="string"),
+     *         @SWG\Property(
+     *            property="company",
+     *            type="object",
+     *            @SWG\Property(property="name", type="string")
+     *         )
+     *      )
+     * )
      * @ParamConverter(
      *     "user",
      *     converter="fos_rest.request_body",
@@ -130,6 +146,23 @@ class UserController extends BaseController
      *         @SWG\Items(ref=@Model(type=User::class, groups={"create"}))
      *     )
      * )
+     * @SWG\Parameter(
+     *     name="Body",
+     *     in="body",
+     *     required=true,
+     *     description="All user fields are mandatory. If you want to change user comapny, please enter an existing comapny name",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(property="firstname", type="string"),
+     *         @SWG\Property(property="lastname", type="string"),
+     *         @SWG\Property(property="email", type="string"),
+     *         @SWG\Property(
+     *            property="company",
+     *            type="object",
+     *            @SWG\Property(property="name", type="string")
+     *         )
+     *      )
+     * )
      * @SWG\Tag(name="users")
      * @param UserRepository $userRepository
      * @param CompanyRepository $companyRepository
@@ -151,8 +184,8 @@ class UserController extends BaseController
 
         $this->notFound($user, 'User not found');
 
-        $form = $this->createForm(UserType::class, $user);
-        $form->submit($request->request->all());
+        $this->hydrateUser($user, $request->request->all());
+
         $manager->persist($user);
         $manager->flush();
 
