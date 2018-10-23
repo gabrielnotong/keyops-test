@@ -24,7 +24,9 @@ Unit testing
 ---
 > Configure database
 - Edit this file `phpunit.xml.dist` (located in the root of the project) and enter your database parameter here:
+
 `<env name="DATABASE_URL" value="mysql://database_user:database_password@127.0.0.1:3306/database" />`
+
 > Some tests have been implemented
 - php bin/phpunit
 
