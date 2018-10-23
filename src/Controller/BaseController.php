@@ -40,6 +40,7 @@ abstract class BaseController extends FOSRestController
     }
 
     /**
+     * Populetes the user entity with data recovered from the request
      * @param User $user
      * @param array $prams
      * @return User
