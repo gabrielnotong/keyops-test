@@ -5,9 +5,12 @@ use App\Entity\Company;
 use App\Exception\ResourceValidationException;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Knp\Component\Pager\PaginatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Swagger\Annotations as SWG;
@@ -37,12 +40,20 @@ class CompanyController extends BaseController
      * )
      * @SWG\Tag(name="companies")
      * @param CompanyRepository $repository
+     * @param Request $request
+     * @param PaginatorInterface $paginator
      * @return View
      */
-    public function list(CompanyRepository $repository): View
+    public function list(Request $request, CompanyRepository $repository, PaginatorInterface $paginator): View
     {
-        return View::create($repository->findAll(), Response::HTTP_OK , []);
+        $pager = $repository->search(
+            $paginator,
+            $request
+        );
+
+        return View::create($pager, Response::HTTP_OK , []);
     }
+
 
     /**
      * @Rest\Post(path="/companies", name="company_add")
@@ -57,6 +68,18 @@ class CompanyController extends BaseController
      *         type="array",
      *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
      *     )
+     * )
+     * @SWG\Parameter(
+     *     name="Body",
+     *     in="body",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(property="name", type="string"),
+     *         @SWG\Property(property="address", type="string"),
+     *         @SWG\Property(property="phone", type="string"),
+     *         @SWG\Property(property="email", type="string"),
+     *         @SWG\Property(property="description", type="string")
+     *      )
      * )
      * @SWG\Tag(name="companies")
      * @ParamConverter(
@@ -121,6 +144,18 @@ class CompanyController extends BaseController
      *         @SWG\Items(ref=@Model(type=Company::class, groups={"create"}))
      *     )
      * )
+     * @SWG\Parameter(
+     *     name="Body",
+     *     in="body",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(property="name", type="string"),
+     *         @SWG\Property(property="address", type="string"),
+     *         @SWG\Property(property="phone", type="string"),
+     *         @SWG\Property(property="email", type="string"),
+     *         @SWG\Property(property="description", type="string")
+     *      )
+     * )
      * @SWG\Tag(name="companies")
      * @param CompanyRepository $repository
      * @param EntityManagerInterface $manager
@@ -136,10 +171,8 @@ class CompanyController extends BaseController
         $form = $this->createForm(CompanyType::class, $company);
         $form->submit($request->request->all());
 
-        if ($form->isValid()) {
-            $manager->persist($company);
-            $manager->flush();
-        }
+        $manager->persist($company);
+        $manager->flush();
 
         return View::create($company, Response::HTTP_OK , []);
     }

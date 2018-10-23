@@ -2,9 +2,17 @@ jms_serializer:
     visitors:
         xml:
             format_output: '%kernel.debug%'
-#    metadata:
+    metadata:
+        directories:
+            # We remove some unwanted results in the pagination
+            KnpPaginatorBundle:
+                namespace_prefix: Knp\Bundle\PaginatorBundle
+                path: '%kernel.project_dir%/config/serializer/KnpPaginatorBundle'
+            KnpPager:
+                namespace_prefix: Knp\Component\Pager
+                path: '%kernel.project_dir%/config/serializer/KnpPager'
+
 #        auto_detection: false
-#        directories:
 #            any-name:
 #                namespace_prefix: "My\\FooBundle"
 #                path: "@MyFooBundle/Resources/config/serializer"

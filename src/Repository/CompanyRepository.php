@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\Company;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @method Company|null find($id, $lockMode = null, $lockVersion = null)
@@ -12,39 +12,48 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Company[]    findAll()
  * @method Company[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CompanyRepository extends ServiceEntityRepository
+class CompanyRepository extends BaseRepository
 {
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Company::class);
     }
 
-//    /**
-//     * @return Company[] Returns an array of Company objects
-//     */
-    /*
-    public function findByExampleField($value)
+    public function createFindAllQuery()
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this->createQueryBuilder('company');
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Company
+    /**
+     * Searches companies by applying filters
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return \Knp\Component\Pager\Pagination\PaginationInterface*
+     */
+    public function search(PaginatorInterface $paginator, Request $request)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
+        // Filter on company name
+        $term = empty($request->query->getAlnum('filter')) ? null : $request->query->getAlnum('filter');
+        // order the result. default is 'asc'
+        $order =  empty($request->query->getAlnum('order')) ? 'asc' : $request->query->getAlnum('order');
+        // number of elements per page
+        $limit = empty($request->query->getAlnum('limit')) ? 3 : $request->query->getAlnum('limit');
+        // page number
+        $offset = empty($request->query->getAlnum('offset')) ? 1 : $request->query->getAlnum('offset');
+
+        $qb = $this
+            ->createQueryBuilder('c')
+            ->select('c')
+            ->orderBy('c.name', $order)
         ;
+
+        if ($term) {
+            $qb
+                ->where('c.name LIKE ?1')
+                ->setParameter(1, '%'.$term.'%')
+            ;
+        }
+
+        return $this->paginate($paginator, $qb, $limit, $offset);
     }
-    */
 }
