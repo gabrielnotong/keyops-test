@@ -10,8 +10,17 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
+/**
+ * Sonata admin class to manage companies
+ * Class CompanyAdmin
+ * @package App\Admin
+ */
 class CompanyAdmin extends AbstractAdmin
 {
+    /**
+     * fields which will be displayed in the form
+     * @param FormMapper $formMapper
+     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
@@ -23,6 +32,10 @@ class CompanyAdmin extends AbstractAdmin
         ;
     }
 
+    /**
+     * Fields used to filter table informations
+     * @param DatagridMapper $datagridMapper
+     */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
